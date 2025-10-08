@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomizationOptions, DEFAULT_CUSTOMIZATION, getThemeColors, Theme } from '../types/customization';
+import { CustomizationOptions, DEFAULT_CUSTOMIZATION, getThemeColors, Theme, ThemePreset, THEME_PRESET_NAMES } from '../types/customization';
 
 interface CustomizePanelProps {
   isOpen: boolean;
@@ -21,10 +21,19 @@ const CustomizePanel: React.FC<CustomizePanelProps> = ({
   };
 
   const handleThemeToggle = (theme: Theme) => {
-    const themeColors = getThemeColors(theme);
+    const themeColors = getThemeColors(theme, options.themePreset);
     onOptionsChange({
       ...options,
       theme,
+      ...themeColors,
+    });
+  };
+
+  const handlePresetChange = (preset: ThemePreset) => {
+    const themeColors = getThemeColors(options.theme, preset);
+    onOptionsChange({
+      ...options,
+      themePreset: preset,
       ...themeColors,
     });
   };
@@ -75,7 +84,7 @@ const CustomizePanel: React.FC<CustomizePanelProps> = ({
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
-              Theme
+              Theme Mode
             </h3>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -105,6 +114,30 @@ const CustomizePanel: React.FC<CustomizePanelProps> = ({
                 Light
               </button>
             </div>
+          </div>
+
+          {/* Color Preset Section */}
+          <div className="space-y-4 pb-4 border-b border-gray-700/50">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+              Color Scheme
+            </h3>
+            <select
+              value={options.themePreset}
+              onChange={(e) => handlePresetChange(e.target.value as ThemePreset)}
+              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:bg-gray-750 transition-colors"
+            >
+              {(Object.keys(THEME_PRESET_NAMES) as ThemePreset[]).map((preset) => (
+                <option key={preset} value={preset}>
+                  {THEME_PRESET_NAMES[preset]}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-400 italic">
+              Choose a color scheme for {options.theme} mode
+            </p>
           </div>
 
           {/* Background Section */}
